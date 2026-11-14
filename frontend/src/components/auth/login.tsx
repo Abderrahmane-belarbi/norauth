@@ -57,9 +57,6 @@ export default function Login() {
           <Brand />
         </Link>
         <div className="form-heading">
-          <div className="heading-icon">
-            <LockKeyhole size={20} />
-          </div>
           <h1>Welcome back</h1>
           <p className="subtitle">Enter your details to access your account.</p>
         </div>

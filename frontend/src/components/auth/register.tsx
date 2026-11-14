@@ -52,9 +52,6 @@ export function Register() {
           <Brand />
         </Link>
         <div className="form-heading">
-          <div className="heading-icon">
-            <UserRound size={20} />
-          </div>
           <h1>Create your account</h1>
           <p className="subtitle">A better way to keep everything in focus.</p>
         </div>
@@ -123,10 +120,6 @@ export function Register() {
             {busy ? "Creating account…" : "Create account"}{" "}
             <ArrowRight size={17} />
           </button>
-          <p className="form-legal">
-            Creating an account does not sign you in. We’ll email you a
-            verification link.
-          </p>
         </form>
 
         <div className="trust-note">
