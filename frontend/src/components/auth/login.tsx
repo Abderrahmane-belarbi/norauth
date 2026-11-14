@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   CheckCircle2,
-  LockKeyhole,
   ShieldCheck,
   X,
 } from "lucide-react";

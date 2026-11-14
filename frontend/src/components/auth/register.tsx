@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  CheckCircle2,
-  ShieldCheck,
-  UserRound,
-  X,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Brand } from "../brand";
 import { useState, type FormEvent } from "react";
@@ -20,7 +14,7 @@ export function Register() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setNotice("");
@@ -28,14 +22,32 @@ export function Register() {
       setError("Your passwords don’t match. Please try again.");
       return;
     }
+    try {
+      setBusy(true);
+      const response = await fetch("http://localhost:5000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+      console.log("response:", response);
 
-    setBusy(true);
-    window.setTimeout(() => {
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.message);
+      } else {
+        setNotice(data.message);
+        //setNotice("Check your email. We’ve sent a verification link to your inbox.");
+      }
+    } catch (error) {
+    } finally {
       setBusy(false);
-      setNotice(
-        "Check your email. We’ve sent a verification link to your inbox.",
-      );
-    }, 550);
+    }
   }
 
   return (
