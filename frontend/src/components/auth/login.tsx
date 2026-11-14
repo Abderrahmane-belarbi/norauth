@@ -46,14 +46,14 @@ export default function Login() {
   return (
     <section className="form-panel">
       <div className="form-top">
-        <span>Already have an account?</span>
+        <span>Don't have an account?</span>
         <Link to={"/register"}>
           Create account
           <ArrowRight size={15} />
         </Link>
       </div>
       <div className="form-inner">
-        <Link to="/login" className="mobile-brand">
+        <Link to="/" className="mobile-brand">
           <Brand />
         </Link>
         <div className="form-heading">
