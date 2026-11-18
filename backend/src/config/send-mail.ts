@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { google, type gmail_v1 } from "googleapis";
 import MailComposer from "nodemailer/lib/mail-composer/index.js";
-import { requireEnv, validateEmail } from "../lib/utils/input.utils"; 
+import { requireEnv, validateEmail } from "../lib/utils/input.utils";
 
 export interface SendMailOptions {
   to: string;
@@ -56,13 +56,32 @@ export async function sendMail({
 
   const message = await mail.compile().build();
 
-  const { data } = await getGmailClient().users.messages.send({
-    userId: "me",
-    requestBody: {
-      raw: message.toString("base64url"),
-    },
-  });
+  const gmail = getGmailClient();
 
-  // Errors propagate to the caller; handle them in your route.
-  return data;
+  try {
+    const { data } = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw: message.toString("base64url"),
+      },
+    });
+    return data;
+  } catch (error) {
+    // Google API errors can include credentials and the raw email in request config.
+    if (error instanceof Error && error.message === "invalid_grant") {
+      throw new Error(
+        "Gmail OAuth rejected REFRESH_TOKEN (invalid_grant). Reauthorize the sender account.",
+      );
+    }
+
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? error.status
+        : undefined;
+    throw new Error(
+      typeof status === "number"
+        ? `Gmail API request failed (HTTP ${status}).`
+        : "Gmail API request failed.",
+    );
+  }
 }

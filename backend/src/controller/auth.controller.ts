@@ -352,8 +352,8 @@ export async function forgetPassword(req: Request, res: Response) {
 
         html: resetPasswordTemplate(appName, resetUrl, expiresInMinutes),
       });
-    } catch {
-      console.error("Failed to send reset password email");
+    } catch (error) {
+      console.error("Failed to send reset password email:", error);
       await prisma.user.updateMany({
         where: {
           id: user.id,

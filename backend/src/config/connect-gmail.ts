@@ -1,28 +1,30 @@
 import { google } from "googleapis";
 import { Request, Response, Router } from "express";
+import { randomBytes } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import { requireEnv } from "../lib/utils/input.utils";
 
 const router = Router();
+let pendingState: string | undefined;
 
 function createOAuthClient() {
   return new google.auth.OAuth2(
     requireEnv("GOOGLE_CLIENT_ID"),
     requireEnv("GOOGLE_CLIENT_SECRET"),
-    process.env.NODE_ENV === "development"
-      ? requireEnv("LOCAL_GOOGLE_REDIRECT_URI")
-      : requireEnv("PUBLIC_GOOGLE_REDIRECT_URI"),
+    requireEnv("LOCAL_GOOGLE_REDIRECT_URI"),
   );
 }
 
 // Redirect to Google.
 router.get("/google", (_req: Request, res: Response): void => {
   const oauth2Client = createOAuthClient();
+  pendingState = randomBytes(32).toString("hex");
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: ["https://www.googleapis.com/auth/gmail.send"],
     prompt: "consent",
+    state: pendingState,
   });
 
   res.redirect(url);
@@ -32,6 +34,12 @@ router.get("/google", (_req: Request, res: Response): void => {
 router.get(
   "/google/callback",
   async (req: Request, res: Response): Promise<void> => {
+    if (!pendingState || req.query.state !== pendingState) {
+      res.status(400).send("Invalid authorization state. Open /auth/google and try again.");
+      return;
+    }
+    pendingState = undefined;
+
     if (req.query.error !== undefined) {
       res.status(400).send("Google authorization was denied or failed.");
       return;
