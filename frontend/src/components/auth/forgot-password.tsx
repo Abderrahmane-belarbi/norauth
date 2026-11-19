@@ -23,18 +23,16 @@ export default function ForgetPassword() {
       const res = await fetch("http://localhost:5000/auth/forgot-password", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({email})
+        body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      if(!res.ok) {
-        console.log('fald')
-        console.log('DATA:', data);
-        console.log(res)
+      console.log("DATA:", data);
+      console.log("Body:", data.body);
+      if (!res.ok) {
         return;
       }
-      console.log('ss:', data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -47,10 +45,20 @@ export default function ForgetPassword() {
       <div className="form-inner">
         <div className="form-heading">
           <h1>Forgot your password?</h1>
-          <p className="subtitle">Enter your email to request a password reset link.</p>
+          <p className="subtitle">
+            Enter your email to request a password reset link.
+          </p>
         </div>
-        {error && <div className="feedback error" role="alert">{error}</div>}
-        {notice && <div className="feedback success" role="status">{notice}</div>}
+        {error && (
+          <div className="feedback error" role="alert">
+            {error}
+          </div>
+        )}
+        {notice && (
+          <div className="feedback success" role="status">
+            {notice}
+          </div>
+        )}
         <form onSubmit={submit} className="auth-form">
           <Field
             label="Email address"
@@ -62,7 +70,8 @@ export default function ForgetPassword() {
             autoComplete="email"
           />
           <button className="primary-button" disabled={busy}>
-            {busy ? "Sending link…" : "Send reset link"} <ArrowRight size={17} />
+            {busy ? "Sending link…" : "Send reset link"}{" "}
+            <ArrowRight size={17} />
           </button>
           <Link className="back-link" to="/login">
             <ArrowLeft size={15} /> Back to sign in

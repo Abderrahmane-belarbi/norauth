@@ -35,8 +35,6 @@ export function Register() {
           password,
         }),
       });
-      console.log("response:", response);
-
       const data = await response.json();
       if (!response.ok) {
         setError(data.message);
@@ -45,6 +43,7 @@ export function Register() {
         //setNotice("Check your email. We’ve sent a verification link to your inbox.");
       }
     } catch (error) {
+      console.log('Error Register:', error);
     } finally {
       setBusy(false);
     }
