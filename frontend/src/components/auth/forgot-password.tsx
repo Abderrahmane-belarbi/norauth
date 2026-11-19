@@ -9,7 +9,7 @@ export default function ForgetPassword() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setNotice("");
@@ -18,13 +18,28 @@ export default function ForgetPassword() {
       setError("Invalid email. We couldn’t find an account with that address.");
       return;
     }
-    setBusy(true);
-    window.setTimeout(() => {
+    try {
+      setBusy(true);
+      const res = await fetch("http://localhost:5000/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({email})
+      });
+      const data = await res.json();
+      if(!res.ok) {
+        console.log('fald')
+        console.log('DATA:', data);
+        console.log(res)
+        return;
+      }
+      console.log('ss:', data);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setBusy(false);
-      setNotice(
-        "If an account exists for this email, you’ll receive a password reset link shortly.",
-      );
-    }, 550);
+    }
   }
 
   return (
