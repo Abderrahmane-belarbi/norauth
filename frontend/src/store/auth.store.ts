@@ -18,7 +18,8 @@ export const useAuth = create<AuthStore>((set) => ({
       }
       return data.message;
     } catch (error) {
-      console.log("Registration failed");
+      const errMessage = error instanceof Error ? error.message : "Error Register"
+      throw new Error(errMessage)
     } finally {
       set({ isLoading: false });
     }

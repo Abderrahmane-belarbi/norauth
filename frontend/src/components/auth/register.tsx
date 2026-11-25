@@ -8,10 +8,8 @@ import { useAuth } from "../../store/auth.store";
 
 export function Register() {
   const { isLoading, register } = useAuth();
-
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,15 +24,12 @@ export function Register() {
       return;
     }
     try {
-      setBusy(isLoading)
       const message = await register(name, email, password)
       setNotice(message);
       // navigate
     } catch (error) {
       const errMessage = error instanceof Error ? error.message : "Error Register"
       setError(errMessage);
-    } finally {
-      setBusy(isLoading);
     }
   }
 
@@ -116,8 +111,8 @@ export function Register() {
             onChange={setConfirm}
             autoComplete="new-password"
           />
-          <button className="primary-button" disabled={busy}>
-            {busy ? "Creating account…" : "Create account"}{" "}
+          <button className="primary-button" disabled={isLoading}>
+            {isLoading ? "Creating account…" : "Create account"}{" "}
             <ArrowRight size={17} />
           </button>
         </form>
