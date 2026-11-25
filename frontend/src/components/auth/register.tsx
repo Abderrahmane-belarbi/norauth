@@ -4,8 +4,11 @@ import { Brand } from "../brand";
 import { useState, type FormEvent } from "react";
 import Field from "./field";
 import Footer from "./footer";
+import { useAuth } from "../../store/auth.store";
 
 export function Register() {
+  const { isLoading, register } = useAuth();
+
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -23,29 +26,15 @@ export function Register() {
       return;
     }
     try {
-      setBusy(true);
-      const response = await fetch("http://localhost:5000/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.message);
-      } else {
-        setNotice(data.message);
-        //setNotice("Check your email. We’ve sent a verification link to your inbox.");
-      }
+      setBusy(isLoading)
+      const message = await register(name, email, password)
+      setNotice(message);
+      // navigate
     } catch (error) {
-      console.log('Error Register:', error);
+      const errMessage = error instanceof Error ? error.message : "Error Register"
+      setError(errMessage);
     } finally {
-      setBusy(false);
+      setBusy(isLoading);
     }
   }
 
