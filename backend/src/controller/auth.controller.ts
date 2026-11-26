@@ -102,7 +102,7 @@ export async function registerHandler(req: Request, res: Response) {
     }
     // 5. Return response
     return res.status(201).json({
-      message: "Registration successful",
+      message: "Registration successful! Please check your email to verify your account.",
     });
   } catch (error) {
     console.error("Registration error:", error);
