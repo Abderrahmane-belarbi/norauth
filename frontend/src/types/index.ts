@@ -16,7 +16,8 @@ export type SessionState =
   | { status: 'error', user: null | SessionUser }
 
 export type AuthStore = {
-  session: SessionState,
-  isLoading: boolean,
-  register: (name: string, email: string, password: string) => Promise<string>
+  session: SessionState;
+  isLoading: boolean;
+  register: (name: string, email: string, password: string) => Promise<string>;
+  resendVerificationEmail: (email: string) => Promise<string>;
 }

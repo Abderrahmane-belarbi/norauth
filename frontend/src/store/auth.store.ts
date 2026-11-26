@@ -24,4 +24,36 @@ export const useAuth = create<AuthStore>((set) => ({
       set({ isLoading: false });
     }
   },
+  verifyEmail: async (token?: string, email?: string) => {
+    if(email && !token) {
+      set({ isLoading: true })
+      try {
+      
+      } catch (error) {
+        
+      } finally {
+
+      }
+    }
+  },
+  resendVerificationEmail: async (email: string) => {
+    set({ isLoading: true });
+    try {
+      const res = await fetch(`${API_URL}/auth/resend-verification-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message ?? "Resend verification email failed");
+      }
+      return data.message;
+    } catch (error) {
+      const errMessage = error instanceof Error ? error.message : "Resend verification email failed"
+      throw new Error(errMessage)
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));

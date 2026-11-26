@@ -1,5 +1,5 @@
 import { ArrowRight, CheckCircle2, ShieldCheck, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Brand } from "../brand";
 import { useState, type FormEvent } from "react";
 import Field from "./field";
@@ -7,6 +7,7 @@ import Footer from "./footer";
 import { useAuth } from "../../store/auth.store";
 
 export function Register() {
+  const navigate = useNavigate();
   const { isLoading, register } = useAuth();
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -24,11 +25,12 @@ export function Register() {
       return;
     }
     try {
-      const message = await register(name, email, password)
+      const message = await register(name, email, password);
       setNotice(message);
       // navigate
     } catch (error) {
-      const errMessage = error instanceof Error ? error.message : "Error Register"
+      const errMessage =
+        error instanceof Error ? error.message : "Error Register";
       setError(errMessage);
     }
   }
@@ -57,11 +59,13 @@ export function Register() {
               {notice}
               <div className="feedback-actions">
                 <button
-                  onClick={() =>
-                    setNotice("A fresh verification link is on its way.")
-                  }
+                  onClick={() => {
+                    navigate("/verify-email", {
+                      state: { email },
+                    });
+                  }}
                 >
-                  Resend verification email
+                  Verify email
                 </button>
                 <Link to="/login">Go to login</Link>
               </div>

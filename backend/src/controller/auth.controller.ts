@@ -26,7 +26,7 @@ import { isValidTokenFormat } from "../lib/utils";
 import { OAuth2Client } from "google-auth-library";
 
 const appName = requireEnv("APP_NAME") || "Your App";
-const baseUrl =
+const frontendBaseUrl =
   process.env.NODE_ENV === "development"
     ? requireEnv("APP_PRIVATE_URL")
     : requireEnv("APP_PUBLIC_URL");
@@ -54,7 +54,7 @@ export async function registerHandler(req: Request, res: Response) {
     // 3. Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
     // 4. Create user
-    const verificationUrl = new URL("/auth/verify-email", baseUrl);
+    const verificationUrl = new URL("/verify-email", frontendBaseUrl);
     const rawToken = crypto.randomBytes(32).toString("hex");
     verificationUrl.searchParams.set("token", rawToken);
     const tokenHash = hashToken(rawToken);
@@ -102,7 +102,7 @@ export async function registerHandler(req: Request, res: Response) {
     }
     // 5. Return response
     return res.status(201).json({
-      message: "Registration successful! Please check your email to verify your account.",
+      message: "Account created! Check your email to verify it.",
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -330,7 +330,7 @@ export async function forgetPassword(req: Request, res: Response) {
     user.resetPasswordToken = tokenHash;
     user.resetPasswordExpires = resetPasswordExpires;
     await prisma.user.update({ where: { id: user.id }, data: user });
-    const resetUrl = new URL(`/auth/reset-password?token=${rawToken}`, baseUrl);
+    const resetUrl = new URL(`/reset-password?token=${rawToken}`, frontendBaseUrl);
     // Send email to user resetPasswordToken not the hashed
     // Send the raw token to the user in the link
     // When user comes back with raw token, you hash it and compare to DB
@@ -474,7 +474,7 @@ export async function resendVerificationEmailHandler(
   }
   const email = emailValidation.data;
   try {
-    if (!baseUrl) {
+    if (!frontendBaseUrl) {
       throw new Error("Application URL is not configured.");
     }
     if (
@@ -524,7 +524,7 @@ export async function resendVerificationEmailHandler(
     const rawToken = crypto.randomBytes(32).toString("hex");
     const tokenHash = hashToken(rawToken);
 
-    const verificationUrl = new URL("/auth/verify-email", baseUrl);
+    const verificationUrl = new URL("/verify-email", frontendBaseUrl);
     verificationUrl.searchParams.set("token", rawToken);
     const nextAllowedAt = new Date(
       now.getTime() + emailVerificationCooldown * 1000,
@@ -693,11 +693,11 @@ export async function googleCallbackHandler(req: Request, res: Response) {
   }
 
   try {
-    if (!baseUrl) {
+    if (!frontendBaseUrl) {
       throw new Error("Application URL is not configured.");
     }
 
-    const frontendUrl = new URL(baseUrl);
+    const frontendUrl = new URL(frontendBaseUrl);
 
     const redirectUrl = new URL(
       process.env.REDIRECT_AFTER_LOGIN_URL || "/",
