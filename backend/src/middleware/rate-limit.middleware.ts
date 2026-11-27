@@ -2,7 +2,7 @@ import { rateLimit } from "express-rate-limit";
 
 function createLimiter(limit: number, message: string) {
   return rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 1 * 60 * 1000, // 15 minutes
     limit,
     standardHeaders: "draft-8",
     legacyHeaders: false,

@@ -26,14 +26,30 @@ export function VerifyEmail() {
   const [cooldown, setCooldown] = useState(0);
   const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
   const [showInboxMessage, setShowInboxMessage] = useState(false);
-  const [notice, setNotice] = useState('');
-  const [error, setError] = useState('');
+  const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
   const isVerifying = Boolean(token) && verifiedToken !== token;
   const verified = Boolean(token) && verifiedToken === token;
   const isCoolingDown = cooldown > 0;
-  
+  const emailVerificationResedAvailableAtKey =
+    import.meta.env.VITE_EMAIL_VERIFICATION_RESEND_AVAILABLE_AT_KEY ||
+    "emailVerificationResedAvailableAt";
+  const emailVerificationCoolDown =
+    import.meta.env.VITE_EMAIL_VERIFICATION_COOLDOWN || 60;
   // UI preview only: these timers demonstrate states without making API calls.
   // A real verification response must determine success when connected later.
+
+  function getRemainingCooldownSeconds() {
+    const emailVerificationResedAvailableAt = window.sessionStorage.getItem(
+      emailVerificationResedAvailableAtKey,
+    );
+    if (!emailVerificationResedAvailableAt) return 0;
+    return Math.max(
+      Math.ceil((Number(emailVerificationResedAvailableAt) - Date.now()) / 1000),
+      0,
+    );
+  }
+
   useEffect(() => {
     if (!token) return;
     const timer = window.setTimeout(() => setVerifiedToken(token), 1600);
@@ -41,43 +57,46 @@ export function VerifyEmail() {
   }, [token]);
 
   useEffect(() => {
-    if (delivery !== "sending") return;
-    const timer = window.setTimeout(() => {
-      setDelivery("sent");
-      setCooldown(60);
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, [delivery]);
-
-  useEffect(() => {
-    const retryAfter = data?.retryAfter;
-    if (!retryAfter) return;
-    setCooldown(retryAfter);
-    const timer = window.setInterval(() => {
-      setCooldown((seconds) => Math.max(0, seconds - 1));
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [isCoolingDown]);
-
-  useEffect(() => {
     async function init() {
       if (email && !token) {
+        if (isCoolingDown) return;
         try {
           const message = await resendVerificationEmail(email);
           setNotice(message);
+
+          const retryAfter = Date.now() + emailVerificationCoolDown * 1000;
+          console.log("retryAfter:", retryAfter);
+          window.sessionStorage.setItem(
+            emailVerificationResedAvailableAtKey,
+            String(retryAfter),
+          );
+
+          setCooldown(getRemainingCooldownSeconds());
         } catch (error) {
           //setCooldown(data?.retryAfter || 0);
-          const errorMessage = error instanceof Error ? error.message : "Sending verification email failed!"
-          setError(errorMessage)
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Sending verification email failed!";
+          setError(errorMessage);
         }
       }
     }
     init();
   }, []);
 
+  useEffect(() => {
+    if (!getRemainingCooldownSeconds()) return;
+    setCooldown(getRemainingCooldownSeconds());
+    const timer = window.setInterval(() => {
+      setCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [isCoolingDown]);
+
   async function resendEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!email.trim() || delivery === "sending" || isCoolingDown) return;
+    if (!email.trim() || isLoading || isCoolingDown) return;
     setDelivery("sending");
     setShowInboxMessage(true);
     await resendVerificationEmail(email);
@@ -195,17 +214,19 @@ export function VerifyEmail() {
                   autoComplete="email"
                 />
               )}
-
+              {data?.error && (
+                <p className="text-red-900 text-sm">{data?.error}</p>
+              )}
               <div className="verification-resend-row">
                 <span>Didn't receive an email?</span>
                 <button
                   className="verification-resend-button"
                   type="submit"
                   disabled={
-                    !email.trim() || delivery === "sending" || isCoolingDown
+                    !email.trim() || isLoading || isCoolingDown
                   }
                 >
-                  {delivery === "sending" ? (
+                  {isLoading ? (
                     <LoaderCircle
                       size={14}
                       className="verification-spinner"
@@ -214,7 +235,7 @@ export function VerifyEmail() {
                   ) : (
                     <RefreshCw size={14} aria-hidden="true" />
                   )}
-                  {delivery === "sending"
+                  {isLoading
                     ? "Sending…"
                     : isCoolingDown
                       ? `Resend in ${cooldown}s`
