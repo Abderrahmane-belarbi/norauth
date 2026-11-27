@@ -1,10 +1,10 @@
 import { ArrowRight, CheckCircle2, ShieldCheck, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Brand } from "../brand";
+import { Brand } from "../components/brand";
 import { useState, type FormEvent } from "react";
-import Field from "./field";
-import Footer from "./footer";
-import { useAuth } from "../../store/auth.store";
+import Field from "../components/auth/field";
+import Footer from "../components/auth/footer";
+import { useAuth } from "../store/auth.store";
 
 export function Register() {
   const navigate = useNavigate();

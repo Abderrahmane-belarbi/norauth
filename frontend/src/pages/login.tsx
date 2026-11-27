@@ -5,11 +5,11 @@ import {
   X,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Brand } from "../brand";
+import { Brand } from "../components/brand";
 import { useState, type FormEvent } from "react";
-import GoogleMark from "../svg/google-mark";
-import Footer from "./footer";
-import Field from "./field";
+import GoogleMark from "../components/svg/google-mark";
+import Footer from "../components/auth/footer";
+import Field from "../components/auth/field";
 
 export default function Login() {
   const navigate = useNavigate();

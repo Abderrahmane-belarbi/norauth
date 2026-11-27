@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import MainLayout from './layouts/main-layout'
-import Login from './components/auth/login'
-import { Register } from './components/auth/register'
-import ForgotPassword from './components/auth/forgot-password'
-import { VerifyEmail } from './components/auth/verify-email'
+import Login from './pages/login'
+import { Register } from './pages/register'
+import ForgotPassword from './pages/forgot-password'
+import { VerifyEmail } from './pages/verify-email'
 
 function App() {
 

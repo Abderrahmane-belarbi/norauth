@@ -8,10 +8,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import Field from "./field";
-import Footer from "./footer";
+import Field from "../components/auth/field";
+import Footer from "../components/auth/footer";
 import "./verify-email.css";
-import { useAuth } from "../../store/auth.store";
+import { useAuth } from "../store/auth.store";
 
 export function VerifyEmail() {
   const { isLoading, session, resendVerificationEmail, data } = useAuth();

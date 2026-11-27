@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import Field from "./field";
-import Footer from "./footer";
+import Field from "../components/auth/field";
+import Footer from "../components/auth/footer";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
