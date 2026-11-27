@@ -46,6 +46,10 @@ export const useAuth = create<AuthStore>((set) => ({
       });
       const data = await res.json();
       if (!res.ok) {
+        if(res.status === 429) {
+          const retryAfter = Number(res.headers.get("Retry-After"));
+          set({ data: {retryAfter} })
+        }
         throw new Error(data.message ?? "Resend verification email failed");
       }
       return data.message;

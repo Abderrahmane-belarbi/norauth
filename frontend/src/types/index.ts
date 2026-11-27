@@ -15,9 +15,16 @@ export type SessionState =
   | { status: 'unauthenticated'; user: null }
   | { status: 'error', user: null | SessionUser }
 
+type AuthData = {
+  message?: string | undefined;
+  error?: string | undefined
+  retryAfter?: number | undefined
+}
+
 export type AuthStore = {
   session: SessionState;
   isLoading: boolean;
+  data?: AuthData;
   register: (name: string, email: string, password: string) => Promise<string>;
   resendVerificationEmail: (email: string) => Promise<string>;
 }

@@ -484,9 +484,9 @@ export async function resendVerificationEmailHandler(
       throw new Error("Application URL is not configured.");
     }
     if (
-      !Number.isFinite(emailVerificationCooldown) ||
+      !emailVerificationCooldown ||
       emailVerificationCooldown <= 0 ||
-      !Number.isFinite(verificationExpiresInMinutes) ||
+      !verificationExpiresInMinutes ||
       verificationExpiresInMinutes <= 0
     ) {
       throw new Error("Invalid email verification configuration.");
@@ -518,7 +518,7 @@ export async function resendVerificationEmailHandler(
         (user.emailVerificationResendAvailableAt.getTime() - now.getTime()) /
           1000,
       );
-
+      res.setHeader('retryAfterSeconds', retryAfterSeconds);
       return res.status(429).json({
         message:
           `Please wait ${retryAfterSeconds} seconds before requesting ` +

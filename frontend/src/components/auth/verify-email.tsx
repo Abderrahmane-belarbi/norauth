@@ -11,8 +11,10 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import Field from "./field";
 import Footer from "./footer";
 import "./verify-email.css";
+import { useAuth } from "../../store/auth.store";
 
 export function VerifyEmail() {
+  const { isLoading, session, resendVerificationEmail, data } = useAuth();
   const location = useLocation();
   const [search] = useSearchParams();
   const token = search.get("token")?.trim() ?? "";
@@ -24,10 +26,12 @@ export function VerifyEmail() {
   const [cooldown, setCooldown] = useState(0);
   const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
   const [showInboxMessage, setShowInboxMessage] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
   const isVerifying = Boolean(token) && verifiedToken !== token;
   const verified = Boolean(token) && verifiedToken === token;
   const isCoolingDown = cooldown > 0;
-
+  
   // UI preview only: these timers demonstrate states without making API calls.
   // A real verification response must determine success when connected later.
   useEffect(() => {
@@ -46,18 +50,37 @@ export function VerifyEmail() {
   }, [delivery]);
 
   useEffect(() => {
-    if (!isCoolingDown) return;
+    const retryAfter = data?.retryAfter;
+    if (!retryAfter) return;
+    setCooldown(retryAfter);
     const timer = window.setInterval(() => {
       setCooldown((seconds) => Math.max(0, seconds - 1));
     }, 1000);
     return () => window.clearInterval(timer);
   }, [isCoolingDown]);
 
-  function resendEmail(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    async function init() {
+      if (email && !token) {
+        try {
+          const message = await resendVerificationEmail(email);
+          setNotice(message);
+        } catch (error) {
+          //setCooldown(data?.retryAfter || 0);
+          const errorMessage = error instanceof Error ? error.message : "Sending verification email failed!"
+          setError(errorMessage)
+        }
+      }
+    }
+    init();
+  }, []);
+
+  async function resendEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!email.trim() || delivery === "sending" || isCoolingDown) return;
     setDelivery("sending");
     setShowInboxMessage(true);
+    await resendVerificationEmail(email);
   }
 
   return (
