@@ -8,6 +8,7 @@ import {
   Mail,
   RefreshCw,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
@@ -27,6 +28,7 @@ export function VerifyEmail() {
   const [lastSentEmail, setLastSentEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
+  const [showInboxMessage, setShowInboxMessage] = useState(false);
   const isVerifying = Boolean(token) && verifiedToken !== token;
   const verified = Boolean(token) && verifiedToken === token;
   const isCoolingDown = cooldown > 0;
@@ -61,6 +63,7 @@ export function VerifyEmail() {
     if (!email.trim() || delivery === "sending" || isCoolingDown) return;
     setLastSentEmail(email.trim());
     setDelivery("sending");
+    setShowInboxMessage(true);
   }
 
   return (
@@ -136,34 +139,47 @@ export function VerifyEmail() {
           </div>
         ) : (
           <>
-            <div className="verification-inbox-card">
-              <span className="token-note-icon" aria-hidden="true">
-                <Inbox size={21} strokeWidth={1.5} />
-              </span>
-              <div>
-                <strong>Check your inbox</strong>
-                <p>
-                  {initialEmail
-                    ? "Click the link we emailed you to verify your address."
-                    : "Enter your registered email to get a verification link."}
-                </p>
-              </div>
-            </div>
-
             <form className="auth-form" onSubmit={resendEmail}>
               <div>
-                <Field
-                  label="Email address"
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(value) => {
-                    setEmail(value);
-                    if (delivery === "sent") setDelivery("idle");
-                  }}
-                  autoComplete="email"
-                />
+                {showInboxMessage ? (
+                  <div className="verification-inbox-card">
+                    <span className="token-note-icon" aria-hidden="true">
+                      <Inbox size={21} strokeWidth={1.5} />
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <strong>Check your inbox</strong>
+                      <p>
+                        {initialEmail
+                          ? "Click the link we emailed you to verify your address."
+                          : "Enter your registered email to get a verification link."}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="button-link shrink-0 self-start rounded p-1 text-gray-500 hover:text-gray-900"
+                      aria-label="Dismiss inbox message"
+                      onClick={() => setShowInboxMessage(false)}
+                    >
+                      <X size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                ) : (
+                  <Field
+                    label="Email address"
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(value) => {
+                      setEmail(value);
+                      if (delivery === "sent") setDelivery("idle");
+                    }}
+                    autoComplete="email"
+                  />
+                )}
+
                 <div className="verification-resend-row">
                   <span>Didn't receive an email?</span>
                   <button
@@ -186,7 +202,7 @@ export function VerifyEmail() {
                       ? "Sending…"
                       : isCoolingDown
                         ? `Resend in ${cooldown}s`
-                        : "Resend email"}
+                        : "Send email"}
                   </button>
                 </div>
               </div>

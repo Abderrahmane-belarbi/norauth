@@ -25,14 +25,14 @@ export const useAuth = create<AuthStore>((set) => ({
     }
   },
   verifyEmail: async (token?: string, email?: string) => {
+    set({ isLoading: true })
     if(email && !token) {
-      set({ isLoading: true })
       try {
-      
+        
       } catch (error) {
         
       } finally {
-
+        set({ isLoading: false })
       }
     }
   },
