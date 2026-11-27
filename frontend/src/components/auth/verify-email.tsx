@@ -1,13 +1,9 @@
 import {
-  ArrowLeft,
   ArrowRight,
-  Check,
   CheckCircle2,
   Inbox,
   LoaderCircle,
-  Mail,
   RefreshCw,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
@@ -25,7 +21,6 @@ export function VerifyEmail() {
     typeof passedEmail === "string" ? passedEmail : (search.get("email") ?? "");
   const [email, setEmail] = useState(initialEmail);
   const [delivery, setDelivery] = useState<"idle" | "sending" | "sent">("idle");
-  const [lastSentEmail, setLastSentEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const [verifiedToken, setVerifiedToken] = useState<string | null>(null);
   const [showInboxMessage, setShowInboxMessage] = useState(false);
@@ -61,7 +56,6 @@ export function VerifyEmail() {
   function resendEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!email.trim() || delivery === "sending" || isCoolingDown) return;
-    setLastSentEmail(email.trim());
     setDelivery("sending");
     setShowInboxMessage(true);
   }
@@ -138,76 +132,74 @@ export function VerifyEmail() {
             )}
           </div>
         ) : (
-          <>
-            <form className="auth-form" onSubmit={resendEmail}>
-              <div>
-                {showInboxMessage ? (
-                  <div className="verification-inbox-card">
-                    <span className="token-note-icon" aria-hidden="true">
-                      <Inbox size={21} strokeWidth={1.5} />
-                    </span>
+          <form className="auth-form" onSubmit={resendEmail}>
+            <div className="verification-form-body">
+              {showInboxMessage ? (
+                <div className="verification-inbox-card">
+                  <span className="token-note-icon" aria-hidden="true">
+                    <Inbox size={21} strokeWidth={1.5} />
+                  </span>
 
-                    <div className="min-w-0 flex-1">
-                      <strong>Check your inbox</strong>
-                      <p>
-                        {initialEmail
-                          ? "Click the link we emailed you to verify your address."
-                          : "Enter your registered email to get a verification link."}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="button-link shrink-0 self-start rounded p-1 text-gray-500 hover:text-gray-900"
-                      aria-label="Dismiss inbox message"
-                      onClick={() => setShowInboxMessage(false)}
-                    >
-                      <X size={16} aria-hidden="true" />
-                    </button>
+                  <div className="verification-inbox-copy">
+                    <strong>Check your inbox</strong>
+                    <p>
+                      {initialEmail
+                        ? "Click the link we emailed you to verify your address."
+                        : "Enter your registered email to get a verification link."}
+                    </p>
                   </div>
-                ) : (
-                  <Field
-                    label="Email address"
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(value) => {
-                      setEmail(value);
-                      if (delivery === "sent") setDelivery("idle");
-                    }}
-                    autoComplete="email"
-                  />
-                )}
 
-                <div className="verification-resend-row">
-                  <span>Didn't receive an email?</span>
                   <button
-                    className="verification-resend-button"
-                    type="submit"
-                    disabled={
-                      !email.trim() || delivery === "sending" || isCoolingDown
-                    }
+                    type="button"
+                    className="button-link verification-dismiss-button text-gray-500 hover:text-gray-900"
+                    aria-label="Dismiss inbox message"
+                    onClick={() => setShowInboxMessage(false)}
                   >
-                    {delivery === "sending" ? (
-                      <LoaderCircle
-                        size={12}
-                        className="verification-spinner"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <RefreshCw size={11} aria-hidden="true" />
-                    )}
-                    {delivery === "sending"
-                      ? "Sending…"
-                      : isCoolingDown
-                        ? `Resend in ${cooldown}s`
-                        : "Send email"}
+                    <X size={16} aria-hidden="true" />
                   </button>
                 </div>
+              ) : (
+                <Field
+                  label="Email address"
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(value) => {
+                    setEmail(value);
+                    if (delivery === "sent") setDelivery("idle");
+                  }}
+                  autoComplete="email"
+                />
+              )}
+
+              <div className="verification-resend-row">
+                <span>Didn't receive an email?</span>
+                <button
+                  className="verification-resend-button"
+                  type="submit"
+                  disabled={
+                    !email.trim() || delivery === "sending" || isCoolingDown
+                  }
+                >
+                  {delivery === "sending" ? (
+                    <LoaderCircle
+                      size={14}
+                      className="verification-spinner"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <RefreshCw size={14} aria-hidden="true" />
+                  )}
+                  {delivery === "sending"
+                    ? "Sending…"
+                    : isCoolingDown
+                      ? `Resend in ${cooldown}s`
+                      : "Send email"}
+                </button>
               </div>
-            </form>
-          </>
+            </div>
+          </form>
         )}
       </div>
       <Footer />

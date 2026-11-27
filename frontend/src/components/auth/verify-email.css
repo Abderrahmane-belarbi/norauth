@@ -1,6 +1,92 @@
+.verify-email-panel {
+  min-width: 0;
+  min-height: 100dvh;
+}
+
+.verify-email-panel .form-top {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 24px 32px;
+}
+
 .verify-email-panel .form-inner {
-  padding-top: 38px;
-  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 32px;
+  width: min(calc(100% - 64px), 432px);
+  padding: 40px 0;
+}
+
+.verify-email-panel .form-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.verify-email-panel .form-heading h1 {
+  font-size: clamp(28px, 2.5vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -1.1px;
+}
+
+.verify-email-panel .subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.verify-email-panel .auth-form,
+.verification-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.verify-email-panel .field {
+  gap: 8px;
+}
+
+.verify-email-panel .field-label {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.verify-email-panel .input-wrap {
+  height: 48px;
+}
+
+.verify-email-panel .input-wrap input {
+  min-width: 0;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.verify-email-panel .primary-button {
+  min-height: 48px;
+  height: auto;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.verify-email-panel .page-footer {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 24px 32px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.verify-email-panel .page-footer > div {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 
 .verification-hero-icon {
@@ -33,20 +119,21 @@
 
 .verification-eyebrow {
   display: block;
-  margin-bottom: 10px;
+  margin: 0;
   color: #6d8373;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  line-height: 1.6;
 }
 
 .verification-inbox-card,
 .verification-status-card {
   display: flex;
   align-items: flex-start;
-  gap: 13px;
-  padding: 18px;
+  gap: 12px;
+  padding: 20px;
   border: 1px solid #e3ebe5;
   border-radius: 12px;
   background: #f8faf7;
@@ -54,24 +141,50 @@
 }
 
 .verification-inbox-card {
-  margin-bottom: 26px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 32px;
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+}
+
+.verification-inbox-card .token-note-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.verification-inbox-copy,
+.verification-status-card > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.verification-dismiss-button {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  border-radius: 6px;
 }
 
 .verification-inbox-card strong,
 .verification-status-card strong {
   display: block;
-  margin: 1px 0 5px;
+  margin: 0 0 4px;
   color: #3a5142;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
+  line-height: 1.5;
 }
 
 .verification-inbox-card p,
 .verification-status-card p {
   margin: 0;
   color: #738076;
-  font-size: 12px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
 .verification-status-card > svg {
@@ -90,22 +203,28 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px 10px;
-  padding-top: 12px;
+  gap: 4px 12px;
+  min-height: 36px;
+  padding: 0;
   color: #7e8981;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .verification-resend-button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 0;
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 8px 0;
   border: 0;
   background: transparent;
   color: #42694e;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .verification-resend-button:hover:not(:disabled) {
@@ -120,6 +239,7 @@
 }
 
 .verification-resend-button:focus-visible,
+.verification-dismiss-button:focus-visible,
 .verify-email-panel a:focus-visible {
   outline: 2px solid #6b8c78;
   outline-offset: 5px;
@@ -204,5 +324,43 @@
 @media (prefers-reduced-motion: reduce) {
   .verification-spinner {
     animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .verify-email-panel .form-top {
+    padding: 20px;
+  }
+
+  .verify-email-panel .form-inner {
+    gap: 24px;
+    width: calc(100% - 40px);
+    padding: 32px 0;
+  }
+
+  .verify-email-panel .page-footer {
+    padding: 20px;
+  }
+
+  .verification-inbox-card {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .verification-inbox-card .token-note-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .verification-status-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .verification-resend-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
