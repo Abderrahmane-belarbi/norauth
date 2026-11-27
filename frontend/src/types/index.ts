@@ -21,10 +21,16 @@ type AuthData = {
   retryAfter?: number | undefined
 }
 
+export type VerificationEmailResult = {
+  message: string;
+  retryAfterSeconds?: number;
+};
+
 export type AuthStore = {
   session: SessionState;
   isLoading: boolean;
   data?: AuthData;
   register: (name: string, email: string, password: string) => Promise<string>;
-  resendVerificationEmail: (email: string) => Promise<string>;
+  verifyEmail: (token: string) => Promise<string>;
+  resendVerificationEmail: (email: string) => Promise<VerificationEmailResult>;
 }

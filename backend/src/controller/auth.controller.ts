@@ -606,10 +606,18 @@ export async function resendVerificationEmailHandler(
         message:
           "We could not send the verification email. " +
           "Please try again after the cooldown.",
+        retryAfterSeconds: Math.max(
+          0,
+          Math.ceil((nextAllowedAt.getTime() - Date.now()) / 1000),
+        ),
       });
     }
     return res.status(200).json({
       message: "Verification email sent.",
+      retryAfterSeconds: Math.max(
+        0,
+        Math.ceil((nextAllowedAt.getTime() - Date.now()) / 1000),
+      ),
     });
   } catch (error) {
     console.error("Resend verification request failed.", error);

@@ -10,6 +10,7 @@ export default function Field({
   onChange,
   autoComplete,
   required = true,
+  disabled = false,
 }: {
   label: string;
   id: string;
@@ -19,6 +20,7 @@ export default function Field({
   onChange: (value: string) => void;
   autoComplete?: string;
   required?: boolean;
+  disabled?: boolean;
 }) {
   const [visible, setVisible] = useState(false);
   const secret = type === "password";
@@ -35,11 +37,13 @@ export default function Field({
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
           required={required}
+          disabled={disabled}
         />
         {secret && (
           <button
             type="button"
             className="reveal"
+            disabled={disabled}
             aria-label={visible ? "Hide password" : "Show password"}
             onClick={() => setVisible(!visible)}
           >
