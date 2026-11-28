@@ -3,12 +3,12 @@ export function getCooldownSeconds(value: unknown): number {
   return Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : 60;
 }
 
-export function normalizeCooldownEmail(email: string): string {
+export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
 function storageKey(email: string, prefix: string): string {
-  return `${prefix}:${encodeURIComponent(normalizeCooldownEmail(email))}`;
+  return `${prefix}:${encodeURIComponent(normalizeEmail(email))}`;
 }
 
 export function getRemainingSeconds(deadline: number, now = Date.now()): number {

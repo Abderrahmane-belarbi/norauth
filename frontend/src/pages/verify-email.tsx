@@ -13,7 +13,7 @@ import Footer from "../components/auth/footer";
 import "./verify-email.css";
 import { useAuth } from "../store/auth.store";
 import { AuthRequestError } from "../lib/auth-api";
-import { getCooldownSeconds, getRemainingSeconds, normalizeCooldownEmail, readCooldownDeadline, saveCooldownDeadline } from "../lib/utils/auth.utils";
+import { getCooldownSeconds, getRemainingSeconds, normalizeEmail, readCooldownDeadline, saveCooldownDeadline } from "../lib/utils/auth.utils";
 
 const cooldownKeyPrefix =
   import.meta.env.VITE_EMAIL_VERIFICATION_RESEND_AVAILABLE_AT_KEY ||
@@ -47,7 +47,7 @@ export function VerifyEmail() {
   const [deadlines, setDeadlines] = useState<Record<string, number>>({});
   const [now, setNow] = useState(() => Date.now());
   const sending = useRef(false);
-  const normalizedEmail = normalizeCooldownEmail(email);
+  const normalizedEmail = normalizeEmail(email);
   const savedDeadline = useMemo(
     () => readCooldownDeadline(normalizedEmail, cooldownKeyPrefix),
     [normalizedEmail],
@@ -107,7 +107,7 @@ export function VerifyEmail() {
     const nextDeadline = saveCooldownDeadline(targetEmail, seconds, cooldownKeyPrefix);
     setDeadlines((current) => ({
       ...current,
-      [normalizeCooldownEmail(targetEmail)]: nextDeadline,
+      [normalizeEmail(targetEmail)]: nextDeadline,
     }));
     setNow(Date.now());
   }
@@ -180,7 +180,6 @@ export function VerifyEmail() {
                   : "A quick check, and you're ready to get started."}
           </p>
         </div>
-
         {token ? (
           <div className="auth-form">
             <div
